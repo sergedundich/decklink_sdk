@@ -1,5 +1,5 @@
 /* -LICENSE-START-
-** Copyright (c) 2012 Blackmagic Design
+** Copyright (c) 2013 Blackmagic Design
 **
 ** Permission is hereby granted, free of charge, to any person or organization
 ** obtaining a copy of the software and accompanying documentation covered by
@@ -183,7 +183,9 @@ typedef [v1_enum] enum	_BMDTimecodeFormat {
 typedef [v1_enum] enum	_BMDAudioConnection {
     bmdAudioConnectionEmbedded                                   = /* 'embd' */ 0x656D6264,
     bmdAudioConnectionAESEBU                                     = /* 'aes ' */ 0x61657320,
-    bmdAudioConnectionAnalog                                     = /* 'anlg' */ 0x616E6C67
+    bmdAudioConnectionAnalog                                     = /* 'anlg' */ 0x616E6C67,
+    bmdAudioConnectionAnalogXLR                                  = /* 'axlr' */ 0x61786C72,
+    bmdAudioConnectionAnalogRCA                                  = /* 'arca' */ 0x61726361
 } BMDAudioConnection;
 
 /* Enum BMDAudioOutputAnalogAESSwitch - Audio output Analog/AESEBU switch */
@@ -260,6 +262,7 @@ typedef [v1_enum] enum	_BMDDeckLinkAttributeID {
     BMDDeckLinkHasVideoInputAntiAliasingFilter                   = /* 'aafl' */ 0x6161666C,
     BMDDeckLinkHasBypass                                         = /* 'byps' */ 0x62797073,
     BMDDeckLinkSupportsDesktopDisplay                            = /* 'extd' */ 0x65787464,
+    BMDDeckLinkSupportsClockTimingAdjustment                     = /* 'ctad' */ 0x63746164,
 
     /* Integers */
 
@@ -314,6 +317,12 @@ typedef [v1_enum] enum	_BMD3DPreviewFormat {
     bmd3DPreviewFormatTopBottom                                  = /* 'topb' */ 0x746F7062
 } BMD3DPreviewFormat;
 
+/* Enum BMDNotifications - Events that can be subscribed through IDeckLinkNotification */
+
+typedef [v1_enum] enum	_BMDNotifications {
+    bmdPreferencesChanged                                        = /* 'pref' */ 0x70726566
+} BMDNotifications;
+
 // Forward Declarations
 
 interface IDeckLinkVideoOutputCallback;
@@ -333,6 +342,8 @@ interface IDeckLinkAudioInputPacket;
 interface IDeckLinkScreenPreviewCallback;
 interface IDeckLinkGLScreenPreviewHelper;
 interface IDeckLinkDX9ScreenPreviewHelper;
+interface IDeckLinkNotificationCallback;
+interface IDeckLinkNotification;
 interface IDeckLinkAttributes;
 interface IDeckLinkKeyer;
 interface IDeckLinkVideoConversion;
@@ -645,6 +656,31 @@ interface IDeckLinkVideoConversion;
     HRESULT Render([in] RECT *rc);
     HRESULT SetFrame([in] IDeckLinkVideoFrame *theFrame);
     HRESULT Set3DPreviewFormat([in] BMD3DPreviewFormat previewFormat);
+};
+
+/* Interface IDeckLinkNotificationCallback - DeckLink Notification Callback Interface */
+
+[
+    object,
+    uuid(b002a1ec-070d-4288-8289-bd5d36e5ff0d),
+    local, 
+    helpstring("DeckLink Notification Callback Interface")
+] interface IDeckLinkNotificationCallback : IUnknown
+{
+    HRESULT Notify([in] BMDNotifications topic, [in] ULONGLONG param1, [in] ULONGLONG param2);
+};
+
+/* Interface IDeckLinkNotification - DeckLink Notification interface */
+
+[
+    object,
+    uuid(0a1fb207-e215-441b-9b19-6fa1575946c5),
+    local, 
+    helpstring("DeckLink Notification interface")
+] interface IDeckLinkNotification : IUnknown
+{
+    HRESULT Subscribe([in] BMDNotifications topic, [in] IDeckLinkNotificationCallback *theCallback);
+    HRESULT Unsubscribe([in] BMDNotifications topic, [in] IDeckLinkNotificationCallback *theCallback);
 };
 
 /* Interface IDeckLinkAttributes - DeckLink Attribute interface */

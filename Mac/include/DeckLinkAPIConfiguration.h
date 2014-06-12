@@ -1,5 +1,5 @@
 /* -LICENSE-START-
-** Copyright (c) 2012 Blackmagic Design
+** Copyright (c) 2013 Blackmagic Design
 **
 ** Permission is hereby granted, free of charge, to any person or organization
 ** obtaining a copy of the software and accompanying documentation covered by
@@ -61,6 +61,7 @@ enum _BMDDeckLinkConfigurationID {
 
     bmdDeckLinkConfigHDMI3DPackingFormat                         = '3dpf',
     bmdDeckLinkConfigBypass                                      = 'byps',
+    bmdDeckLinkConfigClockTimingAdjustment                       = 'ctad',
 
     /* Audio Input/Output Flags */
 
@@ -98,6 +99,7 @@ enum _BMDDeckLinkConfigurationID {
     /* Video Input Flags */
 
     bmdDeckLinkConfigVideoInputScanning                          = 'visc',	// Applicable to H264 Pro Recorder only
+    bmdDeckLinkConfigUseDedicatedLTCInput                        = 'dltc',	// Use timecode from LTC input instead of SDI stream
 
     /* Video Input Integers */
 
