@@ -322,6 +322,14 @@ typedef [v1_enum] enum	_BMDDeckLinkAttributeID {
 
 /* End Enum BMDDeckLinkAttributeID */
 
+/* Enum BMDDeckLinkAPIInformationID - DeckLinkAPI information ID */
+
+typedef [v1_enum] enum	_BMDDeckLinkAPIInformationID {
+    BMDDeckLinkAPIVersion                              = /* 'vers' */ 0x76657273
+} BMDDeckLinkAPIInformationID;
+
+/* End Enum BMDDeckLinkAPIInformationID */
+
 /* Forward Declarations */
 
 interface IDeckLinkVideoOutputCallback;
@@ -329,6 +337,7 @@ interface IDeckLinkInputCallback;
 interface IDeckLinkMemoryAllocator;
 interface IDeckLinkAudioOutputCallback;
 interface IDeckLinkIterator;
+interface IDeckLinkAPIInformation;
 interface IDeckLinkDisplayModeIterator;
 interface IDeckLinkDisplayMode;
 interface IDeckLink;
@@ -366,7 +375,7 @@ interface IDeckLinkKeyer;
 
 [
     object,
-    uuid(FD6F311D-4D00-444B-9ED4-1F25B5730AD0),
+    uuid(31D28EE7-88B6-4CB1-897A-CDBF79A26414),
     helpstring("Frame arrival callback.")
 ] interface IDeckLinkInputCallback : IUnknown
 {
@@ -421,6 +430,22 @@ interface IDeckLinkKeyer;
 
 /* End Interface IDeckLinkIterator */
 
+/* Interface IDeckLinkAPIInformation - DeckLinkAPI attribute interface */
+
+[
+    object,
+    uuid(7BEA3C68-730D-4322-AF34-8A7152B532A4),
+    helpstring("DeckLinkAPI attribute interface")
+] interface IDeckLinkAPIInformation : IUnknown
+{
+    HRESULT GetFlag([in] BMDDeckLinkAPIInformationID cfgID, [out] BOOL *value);
+    HRESULT GetInt([in] BMDDeckLinkAPIInformationID cfgID, [out] LONGLONG *value);
+    HRESULT GetFloat([in] BMDDeckLinkAPIInformationID cfgID, [out] double *value);
+    HRESULT GetString([in] BMDDeckLinkAPIInformationID cfgID, [out] BSTR *value);
+};
+
+/* End Interface IDeckLinkAPIInformation */
+
 /* Interface IDeckLinkDisplayModeIterator - enumerates over supported input/output display modes. */
 
 [
@@ -469,7 +494,7 @@ interface IDeckLinkKeyer;
 
 [
     object,
-    uuid(271C65E3-C323-4344-A30F-D908BCB20AA3),
+    uuid(29228142-EB8C-4141-A621-F74026450955),
     local, 
     helpstring("Created by QueryInterface from IDeckLink.")
 ] interface IDeckLinkOutput : IUnknown
@@ -514,7 +539,11 @@ interface IDeckLinkKeyer;
     HRESULT StartScheduledPlayback(BMDTimeValue playbackStartTime, BMDTimeScale timeScale, double playbackSpeed);
     HRESULT StopScheduledPlayback(BMDTimeValue stopPlaybackAtTime, [out] BMDTimeValue *actualStopTime, BMDTimeScale timeScale);
     HRESULT IsScheduledPlaybackRunning([out] BOOL *active);
-    HRESULT GetHardwareReferenceClock(BMDTimeScale desiredTimeScale, [out] BMDTimeValue *elapsedTimeSinceSchedulerBegan);
+    HRESULT GetScheduledStreamTime(BMDTimeScale desiredTimeScale, [out] BMDTimeValue *streamTime, [out] double *playbackSpeed);
+
+    /* Hardware Timing */
+
+    HRESULT GetHardwareReferenceClock(BMDTimeScale desiredTimeScale, [out] BMDTimeValue *hardwareTime, [out] BMDTimeValue *timeInFrame, [out] BMDTimeValue *ticksPerFrame);
 };
 
 /* End Interface IDeckLinkOutput */
@@ -523,7 +552,7 @@ interface IDeckLinkKeyer;
 
 [
     object,
-    uuid(4973F012-9925-458C-871C-18774CDBBECB),
+    uuid(300C135A-9F43-48E2-9906-6D7911D93CF1),
     helpstring("Created by QueryInterface from IDeckLink.")
 ] interface IDeckLinkInput : IUnknown
 {
@@ -551,6 +580,10 @@ interface IDeckLinkKeyer;
     HRESULT PauseStreams(void);
     HRESULT FlushStreams(void);
     HRESULT SetCallback([in] IDeckLinkInputCallback *theCallback);
+
+    /* Hardware Timing */
+
+    HRESULT GetHardwareReferenceClock(BMDTimeScale desiredTimeScale, [out] BMDTimeValue *hardwareTime, [out] BMDTimeValue *timeInFrame, [out] BMDTimeValue *ticksPerFrame);
 };
 
 /* End Interface IDeckLinkInput */
@@ -615,12 +648,13 @@ interface IDeckLinkKeyer;
 
 [
     object,
-    uuid(CF317790-2894-11DE-8C30-0800200C9A66),
+    uuid(9A74FA41-AE9F-47AC-8CF4-01F42DD59965),
     local, 
     helpstring("Provided by the IDeckLinkVideoInput frame arrival callback.")
 ] interface IDeckLinkVideoInputFrame : IDeckLinkVideoFrame
 {
     HRESULT GetStreamTime([out] BMDTimeValue *frameTime, [out] BMDTimeValue *frameDuration, BMDTimeScale timeScale);
+    HRESULT GetHardwareReferenceTimestamp(BMDTimeScale timeScale, [out] BMDTimeValue *frameTime, [out] BMDTimeValue *frameDuration);
 };
 
 /* End Interface IDeckLinkVideoInputFrame */
@@ -809,4 +843,5 @@ importlib("stdole2.tlb");
 
 // import deprecated interfaces
 #include "DeckLinkAPI_v7_1.idl"
+#include "DeckLinkAPI_v7_3.idl"
 };
