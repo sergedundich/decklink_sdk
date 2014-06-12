@@ -84,6 +84,14 @@ enum _BMDDisplayMode {
     bmdMode2k24                                                  = '2k24',
     bmdMode2k25                                                  = '2k25',
 
+    /* 4k Modes */
+
+    bmdMode4K2160p2398                                           = '4k23',
+    bmdMode4K2160p24                                             = '4k24',
+    bmdMode4K2160p25                                             = '4k25',
+    bmdMode4K2160p2997                                           = '4k29',
+    bmdMode4K2160p30                                             = '4k30',
+
     /* Special Modes */
 
     bmdModeUnknown                                               = 'iunk'

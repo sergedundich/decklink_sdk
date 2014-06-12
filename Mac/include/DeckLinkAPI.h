@@ -298,6 +298,7 @@ enum _BMDDeckLinkAttributeID {
     BMDDeckLinkVideoOutputConnections                            = 'vocn',
     BMDDeckLinkVideoInputConnections                             = 'vicn',
     BMDDeckLinkDeviceBusyState                                   = 'dbst',
+    BMDDeckLinkVideoIOSupport                                    = 'vios',	// Returns a BMDVideoIOSupport bit field
 
     /* Floats */
 
@@ -325,6 +326,14 @@ enum _BMDDeviceBusyState {
     bmdDeviceCaptureBusy                                         = 1 << 0,
     bmdDevicePlaybackBusy                                        = 1 << 1,
     bmdDeviceSerialPortBusy                                      = 1 << 2
+};
+
+/* Enum BMDVideoIOSupport - Device video input/output support */
+
+typedef uint32_t BMDVideoIOSupport;
+enum _BMDVideoIOSupport {
+    bmdDeviceSupportsCapture                                     = 1 << 0,
+    bmdDeviceSupportsPlayback                                    = 1 << 1
 };
 
 /* Enum BMD3DPreviewFormat - Linked Frame preview format */
