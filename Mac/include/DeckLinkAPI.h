@@ -448,7 +448,6 @@ enum _BMDDeckLinkAttributeID {
     BMDDeckLinkSupportsInputFormatDetection            = 'infd',
     BMDDeckLinkHasReferenceInput                       = 'hrin',
     BMDDeckLinkHasSerialPort                           = 'hspt',
-    BMDDeckLinkNegotiatedLowBandwidthUSB               = 'lusb',
 
     /* Integers */
 
