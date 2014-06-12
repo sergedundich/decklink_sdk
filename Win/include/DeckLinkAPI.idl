@@ -1,5 +1,5 @@
 /* -LICENSE-START-
-** Copyright (c) 2011 Blackmagic Design
+** Copyright (c) 2012 Blackmagic Design
 **
 ** Permission is hereby granted, free of charge, to any person or organization
 ** obtaining a copy of the software and accompanying documentation covered by
@@ -24,6 +24,15 @@
 ** DEALINGS IN THE SOFTWARE.
 ** -LICENSE-END-
 */
+
+
+#ifndef BMD_CONST
+    #if defined(_MSC_VER)
+        #define BMD_CONST __declspec(selectany) static const
+    #else
+        #define BMD_CONST static const
+    #endif
+#endif
 
 /* DeckLink API */
 
@@ -315,6 +324,7 @@ interface IDeckLinkVideoFrameAncillary;
 interface IDeckLinkAudioInputPacket;
 interface IDeckLinkScreenPreviewCallback;
 interface IDeckLinkGLScreenPreviewHelper;
+interface IDeckLinkDX9ScreenPreviewHelper;
 interface IDeckLinkAttributes;
 interface IDeckLinkKeyer;
 interface IDeckLinkVideoConversion;
@@ -614,6 +624,21 @@ interface IDeckLinkVideoConversion;
     HRESULT Set3DPreviewFormat([in] BMD3DPreviewFormat previewFormat);
 };
 
+/* Interface IDeckLinkDX9ScreenPreviewHelper - Created with CoCreateInstance(). */
+
+[
+    object,
+    uuid(2094B522-D1A1-40C0-9AC7-1C012218EF02),
+    local, 
+    helpstring("Created with CoCreateInstance().")
+] interface IDeckLinkDX9ScreenPreviewHelper : IUnknown
+{
+    HRESULT Initialize([in] void *device);
+    HRESULT Render([in] RECT *rc);
+    HRESULT SetFrame([in] IDeckLinkVideoFrame *theFrame);
+    HRESULT Set3DPreviewFormat([in] BMD3DPreviewFormat previewFormat);
+};
+
 /* Interface IDeckLinkAttributes - DeckLink Attribute interface */
 
 [
@@ -683,6 +708,14 @@ importlib("stdole2.tlb");
 ] coclass CDeckLinkGLScreenPreviewHelper
 {
     [default] interface IDeckLinkGLScreenPreviewHelper;
+};
+
+[
+    uuid(CC010023-E01D-4525-9D59-80C8AB3DC7A0),
+    helpstring("CDeckLinkDX9ScreenPreviewHelper Class")
+] coclass CDeckLinkDX9ScreenPreviewHelper
+{
+    [default] interface IDeckLinkDX9ScreenPreviewHelper;
 };
 
 [

@@ -1,5 +1,5 @@
 /* -LICENSE-START-
-** Copyright (c) 2011 Blackmagic Design
+** Copyright (c) 2012 Blackmagic Design
 **
 ** Permission is hereby granted, free of charge, to any person or organization
 ** obtaining a copy of the software and accompanying documentation covered by
@@ -24,6 +24,15 @@
 ** DEALINGS IN THE SOFTWARE.
 ** -LICENSE-END-
 */
+
+
+#ifndef BMD_CONST
+    #if defined(_MSC_VER)
+        #define BMD_CONST __declspec(selectany) static const
+    #else
+        #define BMD_CONST static const
+    #endif
+#endif
 
 // Type Declarations
 
@@ -289,7 +298,7 @@ interface IBMDStreamingH264NALParser;
     HRESULT GetBytes([out] void** buffer);
     HRESULT GetBytesWithSizePrefix([out] void** buffer); // Contains a 32-bit unsigned big endian size prefix
     HRESULT GetDisplayTime([in] ULONGLONG requestedTimeScale, [out] ULONGLONG* displayTime);
-    HRESULT GetPacketIndex([out] unsigned long* packetIndex);
+    HRESULT GetPacketIndex([out] unsigned long* packetIndex); // Deprecated
 };
 
 /* Interface IBMDStreamingAudioPacket - Represents a chunk of audio data */
@@ -304,7 +313,7 @@ interface IBMDStreamingH264NALParser;
     long GetPayloadSize(void);
     HRESULT GetBytes([out] void** buffer);
     HRESULT GetPlayTime([in] ULONGLONG requestedTimeScale, [out] ULONGLONG* playTime);
-    HRESULT GetPacketIndex([out] unsigned long* packetIndex);
+    HRESULT GetPacketIndex([out] unsigned long* packetIndex); // Deprecated
 };
 
 /* Interface IBMDStreamingMPEG2TSPacket - Represent an MPEG2 Transport Stream packet */
