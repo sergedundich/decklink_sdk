@@ -457,7 +457,7 @@ interface IDeckLinkVideoConversion;
 
 [
     object,
-    uuid(6D40EF78-28B9-4E21-990D-95BB7750A04F),
+    uuid(AF22762B-DFAC-4846-AA79-FA8883560995),
     helpstring("Created by QueryInterface from IDeckLink.")
 ] interface IDeckLinkInput : IUnknown
 {
@@ -471,6 +471,7 @@ interface IDeckLinkVideoConversion;
     HRESULT EnableVideoInput([in] BMDDisplayMode displayMode, [in] BMDPixelFormat pixelFormat, [in] BMDVideoInputFlags flags);
     HRESULT DisableVideoInput(void);
     HRESULT GetAvailableVideoFrameCount([out] unsigned long *availableFrameCount);
+    HRESULT SetVideoInputFrameMemoryAllocator([in] IDeckLinkMemoryAllocator *theAllocator);
 
     /* Audio Input */
 
@@ -694,6 +695,7 @@ importlib("stdole2.tlb");
 
 
 // import deprecated interfaces
+#include "DeckLinkAPI_v9_2.idl"
 #include "DeckLinkAPI_v8_1.idl"
 #include "DeckLinkAPI_v8_0.idl"
 #include "DeckLinkAPI_v7_9.idl"
