@@ -33,12 +33,14 @@
 typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
 typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
 typedef IDeckLinkCocoaScreenPreviewCallback* (*CreateCocoaScreenPreviewFunc)(void*);
+typedef IDeckLinkVideoConversion* (*CreateVideoConversionInstanceFunc)(void);
 
-static pthread_once_t					gDeckLinkOnceControl		= PTHREAD_ONCE_INIT;
-static CFBundleRef						gBundleRef					= NULL;
-static CreateIteratorFunc				gCreateIteratorFunc			= NULL;
+static pthread_once_t						gDeckLinkOnceControl		= PTHREAD_ONCE_INIT;
+static CFBundleRef							gBundleRef					= NULL;
+static CreateIteratorFunc					gCreateIteratorFunc			= NULL;
 static CreateOpenGLScreenPreviewHelperFunc	gCreateOpenGLPreviewFunc	= NULL;
-static CreateCocoaScreenPreviewFunc		gCreateCocoaPreviewFunc		= NULL;
+static CreateCocoaScreenPreviewFunc			gCreateCocoaPreviewFunc		= NULL;
+static CreateVideoConversionInstanceFunc	gCreateVideoConversionFunc	= NULL;
 
 
 void	InitDeckLinkAPI (void)
@@ -54,6 +56,7 @@ void	InitDeckLinkAPI (void)
 			gCreateIteratorFunc = (CreateIteratorFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateDeckLinkIteratorInstance"));
 			gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewHelperFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateOpenGLScreenPreviewHelper"));
 			gCreateCocoaPreviewFunc = (CreateCocoaScreenPreviewFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateCocoaScreenPreview"));
+			gCreateVideoConversionFunc = (CreateVideoConversionInstanceFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateVideoConversionInstance"));
 		}
 		CFRelease(bundleURL);
 	}
@@ -87,5 +90,15 @@ IDeckLinkCocoaScreenPreviewCallback*	CreateCocoaScreenPreview (void* parentView)
 		return NULL;
 	
 	return gCreateCocoaPreviewFunc(parentView);
+}
+
+IDeckLinkVideoConversion* CreateVideoConversionInstance (void)
+{
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	
+	if (gCreateVideoConversionFunc == NULL)
+		return NULL;
+	
+	return gCreateVideoConversionFunc();
 }
 

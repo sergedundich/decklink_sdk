@@ -36,12 +36,14 @@
 
 typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
 typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
+typedef IDeckLinkVideoConversion* (*CreateVideoConversionInstanceFunc)(void);
 
 static pthread_once_t					gDeckLinkOnceControl = PTHREAD_ONCE_INIT;
 static pthread_once_t					gPreviewOnceControl = PTHREAD_ONCE_INIT;
 
-static CreateIteratorFunc				gCreateIteratorFunc = NULL;
+static CreateIteratorFunc					gCreateIteratorFunc = NULL;
 static CreateOpenGLScreenPreviewHelperFunc	gCreateOpenGLPreviewFunc = NULL;
+static CreateVideoConversionInstanceFunc	gCreateVideoConversionFunc	= NULL;
 
 void	InitDeckLinkAPI (void)
 {
@@ -55,6 +57,9 @@ void	InitDeckLinkAPI (void)
 	}
 	gCreateIteratorFunc = (CreateIteratorFunc)dlsym(libraryHandle, "CreateDeckLinkIteratorInstance");
 	if (!gCreateIteratorFunc)
+		fprintf(stderr, "%s\n", dlerror());
+	gCreateVideoConversionFunc = (CreateVideoConversionInstanceFunc)dlsym(libraryHandle, "CreateVideoConversionInstance");
+	if (!gCreateVideoConversionFunc)
 		fprintf(stderr, "%s\n", dlerror());
 }
 
@@ -90,5 +95,14 @@ IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreviewHelper (void)
 	if (gCreateOpenGLPreviewFunc == NULL)
 		return NULL;
 	return gCreateOpenGLPreviewFunc();
+}
+
+IDeckLinkVideoConversion* CreateVideoConversionInstance (void)
+{
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	
+	if (gCreateVideoConversionFunc == NULL)
+		return NULL;
+	return gCreateVideoConversionFunc();
 }
 
