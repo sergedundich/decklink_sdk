@@ -24,31 +24,27 @@
 ** DEALINGS IN THE SOFTWARE.
 ** -LICENSE-END-
 */
-/* DeckLinkAPIDispatch.cpp */
+/* DeckLinkAPIDispatch_v7_6.cpp */
 
-#include "DeckLinkAPI.h"
+#include "DeckLinkAPI_v7_6.h"
 #include <pthread.h>
-
-#if BLACKMAGIC_DECKLINK_API_MAGIC != 1
-	#error The DeckLink API version of DeckLinkAPIDispatch.cpp is not the same version as DeckLinkAPI.h
-#endif
 
 #define kDeckLinkAPI_BundlePath "/Library/Application Support/Blackmagic Design/Blackmagic DeckLink/DeckLinkAPI.bundle"
 
-typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
-typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
-typedef IDeckLinkCocoaScreenPreviewCallback* (*CreateCocoaScreenPreviewFunc)(void*);
-typedef IDeckLinkVideoConversion* (*CreateVideoConversionInstanceFunc)(void);
+typedef IDeckLinkIterator* (*CreateIteratorFunc_v7_6)(void);
+typedef IDeckLinkGLScreenPreviewHelper_v7_6* (*CreateOpenGLScreenPreviewHelperFunc_v7_6)(void);
+typedef IDeckLinkCocoaScreenPreviewCallback_v7_6* (*CreateCocoaScreenPreviewFunc_v7_6)(void*);
+typedef IDeckLinkVideoConversion_v7_6* (*CreateVideoConversionInstanceFunc_v7_6)(void);
 
-static pthread_once_t						gDeckLinkOnceControl		= PTHREAD_ONCE_INIT;
-static CFBundleRef							gBundleRef					= NULL;
-static CreateIteratorFunc					gCreateIteratorFunc			= NULL;
-static CreateOpenGLScreenPreviewHelperFunc	gCreateOpenGLPreviewFunc	= NULL;
-static CreateCocoaScreenPreviewFunc			gCreateCocoaPreviewFunc		= NULL;
-static CreateVideoConversionInstanceFunc	gCreateVideoConversionFunc	= NULL;
+static pthread_once_t								gDeckLinkOnceControl		= PTHREAD_ONCE_INIT;
+static CFBundleRef									gBundleRef					= NULL;
+static CreateIteratorFunc_v7_6						gCreateIteratorFunc			= NULL;
+static CreateOpenGLScreenPreviewHelperFunc_v7_6		gCreateOpenGLPreviewFunc	= NULL;
+static CreateCocoaScreenPreviewFunc_v7_6			gCreateCocoaPreviewFunc		= NULL;
+static CreateVideoConversionInstanceFunc_v7_6		gCreateVideoConversionFunc	= NULL;
 
 
-void	InitDeckLinkAPI (void)
+void	InitDeckLinkAPI_v7_6 (void)
 {
 	CFURLRef		bundleURL;
 
@@ -58,18 +54,18 @@ void	InitDeckLinkAPI (void)
 		gBundleRef = CFBundleCreate(kCFAllocatorDefault, bundleURL);
 		if (gBundleRef != NULL)
 		{
-			gCreateIteratorFunc = (CreateIteratorFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateDeckLinkIteratorInstance_0001"));
-			gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewHelperFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateOpenGLScreenPreviewHelper_0001"));
-			gCreateCocoaPreviewFunc = (CreateCocoaScreenPreviewFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateCocoaScreenPreview_0001"));
-			gCreateVideoConversionFunc = (CreateVideoConversionInstanceFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateVideoConversionInstance_0001"));
+			gCreateIteratorFunc = (CreateIteratorFunc_v7_6)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateDeckLinkIteratorInstance"));
+			gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewHelperFunc_v7_6)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateOpenGLScreenPreviewHelper"));
+			gCreateCocoaPreviewFunc = (CreateCocoaScreenPreviewFunc_v7_6)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateCocoaScreenPreview"));
+			gCreateVideoConversionFunc = (CreateVideoConversionInstanceFunc_v7_6)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateVideoConversionInstance"));
 		}
 		CFRelease(bundleURL);
 	}
 }
 
-IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
+IDeckLinkIterator*		CreateDeckLinkIteratorInstance_v7_6 (void)
 {
-	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI_v7_6);
 	
 	if (gCreateIteratorFunc == NULL)
 		return NULL;
@@ -77,9 +73,9 @@ IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
 	return gCreateIteratorFunc();
 }
 
-IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreviewHelper (void)
+IDeckLinkGLScreenPreviewHelper_v7_6*		CreateOpenGLScreenPreviewHelper_v7_6 (void)
 {
-	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI_v7_6);
 	
 	if (gCreateOpenGLPreviewFunc == NULL)
 		return NULL;
@@ -87,9 +83,9 @@ IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreviewHelper (void)
 	return gCreateOpenGLPreviewFunc();
 }
 
-IDeckLinkCocoaScreenPreviewCallback*	CreateCocoaScreenPreview (void* parentView)
+IDeckLinkCocoaScreenPreviewCallback_v7_6*	CreateCocoaScreenPreview_v7_6 (void* parentView)
 {
-	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI_v7_6);
 	
 	if (gCreateCocoaPreviewFunc == NULL)
 		return NULL;
@@ -97,9 +93,9 @@ IDeckLinkCocoaScreenPreviewCallback*	CreateCocoaScreenPreview (void* parentView)
 	return gCreateCocoaPreviewFunc(parentView);
 }
 
-IDeckLinkVideoConversion* CreateVideoConversionInstance (void)
+IDeckLinkVideoConversion_v7_6* CreateVideoConversionInstance_v7_6 (void)
 {
-	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI_v7_6);
 	
 	if (gCreateVideoConversionFunc == NULL)
 		return NULL;
