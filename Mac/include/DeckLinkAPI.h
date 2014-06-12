@@ -85,6 +85,8 @@ enum _BMDDisplayMode {
     bmdModeNTSC                                        = 'ntsc',
     bmdModeNTSC2398                                    = 'nt23',	// 3:2 pulldown
     bmdModePAL                                         = 'pal ',
+    bmdModeNTSCp                                       = 'ntsp',
+    bmdModePALp                                        = 'palp',
 
     /* HD 1080 Modes */
 
@@ -361,6 +363,7 @@ enum _BMDVideo3DPackingFormat {
     bmdVideo3DPackingSidebySideHalf                    = 'sbsh',
     bmdVideo3DPackingLinebyLine                        = 'lbyl',
     bmdVideo3DPackingTopAndBottom                      = 'tabo',
+    bmdVideo3DPackingFramePacking                      = 'frpk',
     bmdVideo3DPackingLeftOnly                          = 'left',
     bmdVideo3DPackingRightOnly                         = 'righ'
 };
@@ -880,7 +883,7 @@ class IDeckLinkVideoFrame3DExtensions : public IUnknown
 {
 public:
     virtual BMDVideo3DPackingFormat Get3DPackingFormat (void) = 0;
-    virtual HRESULT GetFrameForRightEye (/* in */ IDeckLinkVideoFrame* *rightEyeFrame) = 0;
+    virtual HRESULT GetFrameForRightEye (/* out */ IDeckLinkVideoFrame* *rightEyeFrame) = 0;
 
 protected:
     virtual ~IDeckLinkVideoFrame3DExtensions () {}; // call Release method to drop reference count
