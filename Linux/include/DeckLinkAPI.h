@@ -33,14 +33,14 @@
 #include <stdint.h>
 #include "LinuxCOM.h"
 
-/* Type Declarations */
+// Type Declarations
 
 typedef int64_t BMDTimeValue;
 typedef int64_t BMDTimeScale;
 typedef uint32_t BMDTimecodeBCD;
 
 
-/* Interface ID Declarations */
+// Interface ID Declarations
 
 #define IID_IDeckLinkVideoOutputCallback                 /* E763A626-4A3C-49D1-BF13-E7AD3692AE52 */ (REFIID){0xE7,0x63,0xA6,0x26,0x4A,0x3C,0x49,0xD1,0xBF,0x13,0xE7,0xAD,0x36,0x92,0xAE,0x52}
 #define IID_IDeckLinkInputCallback                       /* 31D28EE7-88B6-4CB1-897A-CDBF79A26414 */ (REFIID){0x31,0xD2,0x8E,0xE7,0x88,0xB6,0x4C,0xB1,0x89,0x7A,0xCD,0xBF,0x79,0xA2,0x64,0x14}
@@ -73,6 +73,9 @@ typedef uint32_t BMDTimecodeBCD;
 
 typedef uint32_t BMDDisplayMode;
 enum _BMDDisplayMode {
+
+    /* SD Modes */
+
     bmdModeNTSC                                        = /* 'ntsc' */ 0x6E747363,
     bmdModeNTSC2398                                    = /* 'nt23' */ 0x6E743233,	// 3:2 pulldown
     bmdModePAL                                         = /* 'pal ' */ 0x70616C20,
@@ -313,7 +316,7 @@ enum _BMDVideoInputConversionMode {
 };
 
 
-/* Enum BMDDeckLinkAttributeID - DeckLink Atribute ID */
+/* Enum BMDDeckLinkAttributeID - DeckLink Attribute ID */
 
 typedef uint32_t BMDDeckLinkAttributeID;
 enum _BMDDeckLinkAttributeID {
@@ -329,6 +332,8 @@ enum _BMDDeckLinkAttributeID {
     /* Integers */
 
     BMDDeckLinkMaximumAudioChannels                    = /* 'mach' */ 0x6D616368,
+    BMDDeckLinkNumberOfSubDevices                      = /* 'nsbd' */ 0x6E736264,
+    BMDDeckLinkSubDeviceIndex                          = /* 'subi' */ 0x73756269,
 
     /* Strings */
 
@@ -444,7 +449,7 @@ enum _BMDDeckControlError {
 
 #if defined(__cplusplus)
 
-/* Forward Declarations */
+// Forward Declarations
 
 class IDeckLinkVideoOutputCallback;
 class IDeckLinkInputCallback;
@@ -504,7 +509,7 @@ protected:
 class IDeckLinkMemoryAllocator : public IUnknown
 {
 public:
-    virtual HRESULT AllocateBuffer (uint32_t bufferSize, /* out */ void **allocatedBuffer) = 0;
+    virtual HRESULT AllocateBuffer (/* in */ uint32_t bufferSize, /* out */ void **allocatedBuffer) = 0;
     virtual HRESULT ReleaseBuffer (/* in */ void *buffer) = 0;
 
     virtual HRESULT Commit (void) = 0;
@@ -517,7 +522,7 @@ public:
 class IDeckLinkAudioOutputCallback : public IUnknown
 {
 public:
-    virtual HRESULT RenderAudioSamples (bool preroll) = 0;
+    virtual HRESULT RenderAudioSamples (/* in */ bool preroll) = 0;
 };
 
 
@@ -588,35 +593,35 @@ public:
 class IDeckLinkOutput : public IUnknown
 {
 public:
-    virtual HRESULT DoesSupportVideoMode (BMDDisplayMode displayMode, BMDPixelFormat pixelFormat, /* out */ BMDDisplayModeSupport *result) = 0;
+    virtual HRESULT DoesSupportVideoMode (/* in */ BMDDisplayMode displayMode, /* in */ BMDPixelFormat pixelFormat, /* out */ BMDDisplayModeSupport *result) = 0;
     virtual HRESULT GetDisplayModeIterator (/* out */ IDeckLinkDisplayModeIterator **iterator) = 0;
 
     virtual HRESULT SetScreenPreviewCallback (/* in */ IDeckLinkScreenPreviewCallback *previewCallback) = 0;
 
     /* Video Output */
 
-    virtual HRESULT EnableVideoOutput (BMDDisplayMode displayMode, BMDVideoOutputFlags flags) = 0;
+    virtual HRESULT EnableVideoOutput (/* in */ BMDDisplayMode displayMode, /* in */ BMDVideoOutputFlags flags) = 0;
     virtual HRESULT DisableVideoOutput (void) = 0;
 
     virtual HRESULT SetVideoOutputFrameMemoryAllocator (/* in */ IDeckLinkMemoryAllocator *theAllocator) = 0;
-    virtual HRESULT CreateVideoFrame (int32_t width, int32_t height, int32_t rowBytes, BMDPixelFormat pixelFormat, BMDFrameFlags flags, /* out */ IDeckLinkMutableVideoFrame **outFrame) = 0;
-    virtual HRESULT CreateAncillaryData (BMDPixelFormat pixelFormat, /* out */ IDeckLinkVideoFrameAncillary **outBuffer) = 0;
+    virtual HRESULT CreateVideoFrame (/* in */ int32_t width, /* in */ int32_t height, /* in */ int32_t rowBytes, /* in */ BMDPixelFormat pixelFormat, /* in */ BMDFrameFlags flags, /* out */ IDeckLinkMutableVideoFrame **outFrame) = 0;
+    virtual HRESULT CreateAncillaryData (/* in */ BMDPixelFormat pixelFormat, /* out */ IDeckLinkVideoFrameAncillary **outBuffer) = 0;
 
     virtual HRESULT DisplayVideoFrameSync (/* in */ IDeckLinkVideoFrame *theFrame) = 0;
-    virtual HRESULT ScheduleVideoFrame (/* in */ IDeckLinkVideoFrame *theFrame, BMDTimeValue displayTime, BMDTimeValue displayDuration, BMDTimeScale timeScale) = 0;
+    virtual HRESULT ScheduleVideoFrame (/* in */ IDeckLinkVideoFrame *theFrame, /* in */ BMDTimeValue displayTime, /* in */ BMDTimeValue displayDuration, /* in */ BMDTimeScale timeScale) = 0;
     virtual HRESULT SetScheduledFrameCompletionCallback (/* in */ IDeckLinkVideoOutputCallback *theCallback) = 0;
     virtual HRESULT GetBufferedVideoFrameCount (/* out */ uint32_t *bufferedFrameCount) = 0;
 
     /* Audio Output */
 
-    virtual HRESULT EnableAudioOutput (BMDAudioSampleRate sampleRate, BMDAudioSampleType sampleType, uint32_t channelCount, BMDAudioOutputStreamType streamType) = 0;
+    virtual HRESULT EnableAudioOutput (/* in */ BMDAudioSampleRate sampleRate, /* in */ BMDAudioSampleType sampleType, /* in */ uint32_t channelCount, /* in */ BMDAudioOutputStreamType streamType) = 0;
     virtual HRESULT DisableAudioOutput (void) = 0;
 
-    virtual HRESULT WriteAudioSamplesSync (/* in */ void *buffer, uint32_t sampleFrameCount, /* out */ uint32_t *sampleFramesWritten) = 0;
+    virtual HRESULT WriteAudioSamplesSync (/* in */ void *buffer, /* in */ uint32_t sampleFrameCount, /* out */ uint32_t *sampleFramesWritten) = 0;
 
     virtual HRESULT BeginAudioPreroll (void) = 0;
     virtual HRESULT EndAudioPreroll (void) = 0;
-    virtual HRESULT ScheduleAudioSamples (/* in */ void *buffer, uint32_t sampleFrameCount, BMDTimeValue streamTime, BMDTimeScale timeScale, /* out */ uint32_t *sampleFramesWritten) = 0;
+    virtual HRESULT ScheduleAudioSamples (/* in */ void *buffer, /* in */ uint32_t sampleFrameCount, /* in */ BMDTimeValue streamTime, /* in */ BMDTimeScale timeScale, /* out */ uint32_t *sampleFramesWritten) = 0;
 
     virtual HRESULT GetBufferedAudioSampleFrameCount (/* out */ uint32_t *bufferedSampleFrameCount) = 0;
     virtual HRESULT FlushBufferedAudioSamples (void) = 0;
@@ -625,14 +630,14 @@ public:
 
     /* Output Control */
 
-    virtual HRESULT StartScheduledPlayback (BMDTimeValue playbackStartTime, BMDTimeScale timeScale, double playbackSpeed) = 0;
-    virtual HRESULT StopScheduledPlayback (BMDTimeValue stopPlaybackAtTime, /* out */ BMDTimeValue *actualStopTime, BMDTimeScale timeScale) = 0;
+    virtual HRESULT StartScheduledPlayback (/* in */ BMDTimeValue playbackStartTime, /* in */ BMDTimeScale timeScale, /* in */ double playbackSpeed) = 0;
+    virtual HRESULT StopScheduledPlayback (/* in */ BMDTimeValue stopPlaybackAtTime, /* out */ BMDTimeValue *actualStopTime, /* in */ BMDTimeScale timeScale) = 0;
     virtual HRESULT IsScheduledPlaybackRunning (/* out */ bool *active) = 0;
-    virtual HRESULT GetScheduledStreamTime (BMDTimeScale desiredTimeScale, /* out */ BMDTimeValue *streamTime, /* out */ double *playbackSpeed) = 0;
+    virtual HRESULT GetScheduledStreamTime (/* in */ BMDTimeScale desiredTimeScale, /* out */ BMDTimeValue *streamTime, /* out */ double *playbackSpeed) = 0;
 
     /* Hardware Timing */
 
-    virtual HRESULT GetHardwareReferenceClock (BMDTimeScale desiredTimeScale, /* out */ BMDTimeValue *hardwareTime, /* out */ BMDTimeValue *timeInFrame, /* out */ BMDTimeValue *ticksPerFrame) = 0;
+    virtual HRESULT GetHardwareReferenceClock (/* in */ BMDTimeScale desiredTimeScale, /* out */ BMDTimeValue *hardwareTime, /* out */ BMDTimeValue *timeInFrame, /* out */ BMDTimeValue *ticksPerFrame) = 0;
 
 protected:
     virtual ~IDeckLinkOutput () {}; // call Release method to drop reference count
@@ -644,20 +649,20 @@ protected:
 class IDeckLinkInput : public IUnknown
 {
 public:
-    virtual HRESULT DoesSupportVideoMode (BMDDisplayMode displayMode, BMDPixelFormat pixelFormat, /* out */ BMDDisplayModeSupport *result) = 0;
+    virtual HRESULT DoesSupportVideoMode (/* in */ BMDDisplayMode displayMode, /* in */ BMDPixelFormat pixelFormat, /* out */ BMDDisplayModeSupport *result) = 0;
     virtual HRESULT GetDisplayModeIterator (/* out */ IDeckLinkDisplayModeIterator **iterator) = 0;
 
     virtual HRESULT SetScreenPreviewCallback (/* in */ IDeckLinkScreenPreviewCallback *previewCallback) = 0;
 
     /* Video Input */
 
-    virtual HRESULT EnableVideoInput (BMDDisplayMode displayMode, BMDPixelFormat pixelFormat, BMDVideoInputFlags flags) = 0;
+    virtual HRESULT EnableVideoInput (/* in */ BMDDisplayMode displayMode, /* in */ BMDPixelFormat pixelFormat, /* in */ BMDVideoInputFlags flags) = 0;
     virtual HRESULT DisableVideoInput (void) = 0;
     virtual HRESULT GetAvailableVideoFrameCount (/* out */ uint32_t *availableFrameCount) = 0;
 
     /* Audio Input */
 
-    virtual HRESULT EnableAudioInput (BMDAudioSampleRate sampleRate, BMDAudioSampleType sampleType, uint32_t channelCount) = 0;
+    virtual HRESULT EnableAudioInput (/* in */ BMDAudioSampleRate sampleRate, /* in */ BMDAudioSampleType sampleType, /* in */ uint32_t channelCount) = 0;
     virtual HRESULT DisableAudioInput (void) = 0;
     virtual HRESULT GetAvailableAudioSampleFrameCount (/* out */ uint32_t *availableSampleFrameCount) = 0;
 
@@ -671,7 +676,7 @@ public:
 
     /* Hardware Timing */
 
-    virtual HRESULT GetHardwareReferenceClock (BMDTimeScale desiredTimeScale, /* out */ BMDTimeValue *hardwareTime, /* out */ BMDTimeValue *timeInFrame, /* out */ BMDTimeValue *ticksPerFrame) = 0;
+    virtual HRESULT GetHardwareReferenceClock (/* in */ BMDTimeScale desiredTimeScale, /* out */ BMDTimeValue *hardwareTime, /* out */ BMDTimeValue *timeInFrame, /* out */ BMDTimeValue *ticksPerFrame) = 0;
 
 protected:
     virtual ~IDeckLinkInput () {}; // call Release method to drop reference count
@@ -705,7 +710,7 @@ public:
     virtual BMDFrameFlags GetFlags (void) = 0;
     virtual HRESULT GetBytes (/* out */ void **buffer) = 0;
 
-    virtual HRESULT GetTimecode (BMDTimecodeFormat format, /* out */ IDeckLinkTimecode **timecode) = 0;
+    virtual HRESULT GetTimecode (/* in */ BMDTimecodeFormat format, /* out */ IDeckLinkTimecode **timecode) = 0;
     virtual HRESULT GetAncillaryData (/* out */ IDeckLinkVideoFrameAncillary **ancillary) = 0;
 
 protected:
@@ -718,10 +723,10 @@ protected:
 class IDeckLinkMutableVideoFrame : public IDeckLinkVideoFrame
 {
 public:
-    virtual HRESULT SetFlags (BMDFrameFlags newFlags) = 0;
+    virtual HRESULT SetFlags (/* in */ BMDFrameFlags newFlags) = 0;
 
-    virtual HRESULT SetTimecode (BMDTimecodeFormat format, /* in */ IDeckLinkTimecode *timecode) = 0;
-    virtual HRESULT SetTimecodeFromComponents (BMDTimecodeFormat format, uint8_t hours, uint8_t minutes, uint8_t seconds, uint8_t frames, BMDTimecodeFlags flags) = 0;
+    virtual HRESULT SetTimecode (/* in */ BMDTimecodeFormat format, /* in */ IDeckLinkTimecode *timecode) = 0;
+    virtual HRESULT SetTimecodeFromComponents (/* in */ BMDTimecodeFormat format, /* in */ uint8_t hours, /* in */ uint8_t minutes, /* in */ uint8_t seconds, /* in */ uint8_t frames, /* in */ BMDTimecodeFlags flags) = 0;
     virtual HRESULT SetAncillaryData (/* in */ IDeckLinkVideoFrameAncillary *ancillary) = 0;
 
 protected:
@@ -734,8 +739,8 @@ protected:
 class IDeckLinkVideoInputFrame : public IDeckLinkVideoFrame
 {
 public:
-    virtual HRESULT GetStreamTime (/* out */ BMDTimeValue *frameTime, /* out */ BMDTimeValue *frameDuration, BMDTimeScale timeScale) = 0;
-    virtual HRESULT GetHardwareReferenceTimestamp (BMDTimeScale timeScale, /* out */ BMDTimeValue *frameTime, /* out */ BMDTimeValue *frameDuration) = 0;
+    virtual HRESULT GetStreamTime (/* out */ BMDTimeValue *frameTime, /* out */ BMDTimeValue *frameDuration, /* in */ BMDTimeScale timeScale) = 0;
+    virtual HRESULT GetHardwareReferenceTimestamp (/* in */ BMDTimeScale timeScale, /* out */ BMDTimeValue *frameTime, /* out */ BMDTimeValue *frameDuration) = 0;
 
 protected:
     virtual ~IDeckLinkVideoInputFrame () {}; // call Release method to drop reference count
@@ -748,7 +753,7 @@ class IDeckLinkVideoFrameAncillary : public IUnknown
 {
 public:
 
-    virtual HRESULT GetBufferForVerticalBlankingLine (uint32_t lineNumber, /* out */ void **buffer) = 0;
+    virtual HRESULT GetBufferForVerticalBlankingLine (/* in */ uint32_t lineNumber, /* out */ void **buffer) = 0;
     virtual BMDPixelFormat GetPixelFormat (void) = 0;
     virtual BMDDisplayMode GetDisplayMode (void) = 0;
 
@@ -764,7 +769,7 @@ class IDeckLinkAudioInputPacket : public IUnknown
 public:
     virtual long GetSampleFrameCount (void) = 0;
     virtual HRESULT GetBytes (/* out */ void **buffer) = 0;
-    virtual HRESULT GetPacketTime (/* out */ BMDTimeValue *packetTime, BMDTimeScale timeScale) = 0;
+    virtual HRESULT GetPacketTime (/* out */ BMDTimeValue *packetTime, /* in */ BMDTimeScale timeScale) = 0;
 
 protected:
     virtual ~IDeckLinkAudioInputPacket () {}; // call Release method to drop reference count
@@ -810,47 +815,47 @@ public:
 
     /* Video Output Configuration */
 
-    virtual HRESULT SetVideoOutputFormat (BMDVideoConnection videoOutputConnection) = 0;
-    virtual HRESULT IsVideoOutputActive (BMDVideoConnection videoOutputConnection, /* out */ bool *active) = 0;
+    virtual HRESULT SetVideoOutputFormat (/* in */ BMDVideoConnection videoOutputConnection) = 0;
+    virtual HRESULT IsVideoOutputActive (/* in */ BMDVideoConnection videoOutputConnection, /* out */ bool *active) = 0;
 
-    virtual HRESULT SetAnalogVideoOutputFlags (BMDAnalogVideoFlags analogVideoFlags) = 0;
+    virtual HRESULT SetAnalogVideoOutputFlags (/* in */ BMDAnalogVideoFlags analogVideoFlags) = 0;
     virtual HRESULT GetAnalogVideoOutputFlags (/* out */ BMDAnalogVideoFlags *analogVideoFlags) = 0;
 
-    virtual HRESULT EnableFieldFlickerRemovalWhenPaused (bool enable) = 0;
+    virtual HRESULT EnableFieldFlickerRemovalWhenPaused (/* in */ bool enable) = 0;
     virtual HRESULT IsEnabledFieldFlickerRemovalWhenPaused (/* out */ bool *enabled) = 0;
 
-    virtual HRESULT Set444And3GBpsVideoOutput (bool enable444VideoOutput, bool enable3GbsOutput) = 0;
+    virtual HRESULT Set444And3GBpsVideoOutput (/* in */ bool enable444VideoOutput, /* in */ bool enable3GbsOutput) = 0;
     virtual HRESULT Get444And3GBpsVideoOutput (/* out */ bool *is444VideoOutputEnabled, /* out */ bool *threeGbsOutputEnabled) = 0;
 
-    virtual HRESULT SetVideoOutputConversionMode (BMDVideoOutputConversionMode conversionMode) = 0;
+    virtual HRESULT SetVideoOutputConversionMode (/* in */ BMDVideoOutputConversionMode conversionMode) = 0;
     virtual HRESULT GetVideoOutputConversionMode (/* out */ BMDVideoOutputConversionMode *conversionMode) = 0;
 
-    virtual HRESULT Set_HD1080p24_to_HD1080i5994_Conversion (bool enable) = 0;
+    virtual HRESULT Set_HD1080p24_to_HD1080i5994_Conversion (/* in */ bool enable) = 0;
     virtual HRESULT Get_HD1080p24_to_HD1080i5994_Conversion (/* out */ bool *enabled) = 0;
 
     /* Video Input Configuration */
 
-    virtual HRESULT SetVideoInputFormat (BMDVideoConnection videoInputFormat) = 0;
+    virtual HRESULT SetVideoInputFormat (/* in */ BMDVideoConnection videoInputFormat) = 0;
     virtual HRESULT GetVideoInputFormat (/* out */ BMDVideoConnection *videoInputFormat) = 0;
 
-    virtual HRESULT SetAnalogVideoInputFlags (BMDAnalogVideoFlags analogVideoFlags) = 0;
+    virtual HRESULT SetAnalogVideoInputFlags (/* in */ BMDAnalogVideoFlags analogVideoFlags) = 0;
     virtual HRESULT GetAnalogVideoInputFlags (/* out */ BMDAnalogVideoFlags *analogVideoFlags) = 0;
 
-    virtual HRESULT SetVideoInputConversionMode (BMDVideoInputConversionMode conversionMode) = 0;
+    virtual HRESULT SetVideoInputConversionMode (/* in */ BMDVideoInputConversionMode conversionMode) = 0;
     virtual HRESULT GetVideoInputConversionMode (/* out */ BMDVideoInputConversionMode *conversionMode) = 0;
 
-    virtual HRESULT SetBlackVideoOutputDuringCapture (bool blackOutInCapture) = 0;
+    virtual HRESULT SetBlackVideoOutputDuringCapture (/* in */ bool blackOutInCapture) = 0;
     virtual HRESULT GetBlackVideoOutputDuringCapture (/* out */ bool *blackOutInCapture) = 0;
 
-    virtual HRESULT Set32PulldownSequenceInitialTimecodeFrame (uint32_t aFrameTimecode) = 0;
+    virtual HRESULT Set32PulldownSequenceInitialTimecodeFrame (/* in */ uint32_t aFrameTimecode) = 0;
     virtual HRESULT Get32PulldownSequenceInitialTimecodeFrame (/* out */ uint32_t *aFrameTimecode) = 0;
 
-    virtual HRESULT SetVancSourceLineMapping (uint32_t activeLine1VANCsource, uint32_t activeLine2VANCsource, uint32_t activeLine3VANCsource) = 0;
+    virtual HRESULT SetVancSourceLineMapping (/* in */ uint32_t activeLine1VANCsource, /* in */ uint32_t activeLine2VANCsource, /* in */ uint32_t activeLine3VANCsource) = 0;
     virtual HRESULT GetVancSourceLineMapping (/* out */ uint32_t *activeLine1VANCsource, /* out */ uint32_t *activeLine2VANCsource, /* out */ uint32_t *activeLine3VANCsource) = 0;
 
     /* Audio Input Configuration */
 
-    virtual HRESULT SetAudioInputFormat (BMDAudioConnection audioInputFormat) = 0;
+    virtual HRESULT SetAudioInputFormat (/* in */ BMDAudioConnection audioInputFormat) = 0;
     virtual HRESULT GetAudioInputFormat (/* out */ BMDAudioConnection *audioInputFormat) = 0;
 };
 

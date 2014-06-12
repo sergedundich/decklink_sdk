@@ -30,6 +30,7 @@
 #include <pthread.h>
 
 #define kDeckLinkAPI_BundlePath "/Library/Application Support/Blackmagic Design/Blackmagic DeckLink/DeckLinkAPI.bundle"
+
 typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
 typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
 typedef IDeckLinkCocoaScreenPreviewCallback* (*CreateCocoaScreenPreviewFunc)(void*);
