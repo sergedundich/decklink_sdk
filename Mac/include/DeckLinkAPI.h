@@ -132,6 +132,14 @@ enum _BMDDetectedVideoInputFormatFlags {
     bmdDetectedVideoInputRGB444                                  = 1 << 1
 };
 
+/* Enum BMDDeckLinkCapturePassthroughMode - Enumerates whether the video output is electrically connected to the video input or if the clean switching mode is enabled */
+
+typedef uint32_t BMDDeckLinkCapturePassthroughMode;
+enum _BMDDeckLinkCapturePassthroughMode {
+    bmdDeckLinkCapturePassthroughModeDirect                      = 'pdir',
+    bmdDeckLinkCapturePassthroughModeCleanSwitch                 = 'pcln'
+};
+
 /* Enum BMDOutputFrameCompletionResult - Frame Completion Callback */
 
 typedef uint32_t BMDOutputFrameCompletionResult;
@@ -305,6 +313,7 @@ enum _BMDDeckLinkAttributeID {
     BMDDeckLinkNumberOfSubDevices                                = 'nsbd',
     BMDDeckLinkSubDeviceIndex                                    = 'subi',
     BMDDeckLinkPersistentID                                      = 'peid',
+    BMDDeckLinkTopologicalID                                     = 'toid',
     BMDDeckLinkVideoOutputConnections                            = 'vocn',
     BMDDeckLinkVideoInputConnections                             = 'vicn',
     BMDDeckLinkDeviceBusyState                                   = 'dbst',

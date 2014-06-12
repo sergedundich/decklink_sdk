@@ -110,6 +110,7 @@ enum _BMDDeckLinkConfigurationID {
     bmdDeckLinkConfigVANCSourceLine1Mapping                      = 'vsl1',
     bmdDeckLinkConfigVANCSourceLine2Mapping                      = 'vsl2',
     bmdDeckLinkConfigVANCSourceLine3Mapping                      = 'vsl3',
+    bmdDeckLinkConfigCapturePassThroughMode                      = 'cptm',
 
     /* Video Input Floats */
 
