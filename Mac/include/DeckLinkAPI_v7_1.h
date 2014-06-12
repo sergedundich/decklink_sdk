@@ -60,9 +60,9 @@
 
 #if defined(__cplusplus)
 
+class IDeckLinkVideoFrame_v7_1;
 class IDeckLinkDisplayModeIterator_v7_1;
 class IDeckLinkDisplayMode_v7_1;
-class IDeckLinkVideoFrame_v7_1;
 class IDeckLinkVideoInputFrame_v7_1;
 class IDeckLinkAudioInputPacket_v7_1;
 
@@ -76,7 +76,7 @@ public:
 class IDeckLinkDisplayMode_v7_1 : public IUnknown
 {
 public:
-	virtual	HRESULT			STDMETHODCALLTYPE	GetName (const char **name) = 0;
+	virtual	HRESULT			STDMETHODCALLTYPE	GetName (CFStringRef* name) = 0;
 	virtual	BMDDisplayMode	STDMETHODCALLTYPE	GetDisplayMode () = 0;
 	virtual	long			STDMETHODCALLTYPE	GetWidth () = 0;
 	virtual	long			STDMETHODCALLTYPE	GetHeight () = 0;

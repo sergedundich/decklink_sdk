@@ -30,8 +30,26 @@
 
 struct REFIID
 {	
-	unsigned char bytes[16];
+	unsigned char byte0;
+	unsigned char byte1;
+	unsigned char byte2;
+	unsigned char byte3;
+	unsigned char byte4;
+	unsigned char byte5;
+	unsigned char byte6;
+	unsigned char byte7;
+	unsigned char byte8;
+	unsigned char byte9;
+	unsigned char byte10;
+	unsigned char byte11;
+	unsigned char byte12;
+	unsigned char byte13;
+	unsigned char byte14;
+	unsigned char byte15;
 };
+
+typedef REFIID CFUUIDBytes;
+#define CFUUIDGetUUIDBytes(x)	x
 
 typedef int HRESULT;
 typedef unsigned long ULONG;
@@ -65,6 +83,8 @@ typedef void *LPVOID;
 #define STDMETHODCALLTYPE
 
 #define IID_IUnknown		(REFIID){0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}
+#define IUnknownUUID		IID_IUnknown
+
 #ifdef __cplusplus
 class IUnknown
 {

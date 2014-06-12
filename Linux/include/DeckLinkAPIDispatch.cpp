@@ -25,27 +25,52 @@
 ** -LICENSE-END-
 **/
 
-#include "DeckLinkAPI.h"
+#include <stdio.h>
 #include <pthread.h>
 #include <dlfcn.h>
 
+#include "DeckLinkAPI.h"
+
 #define kDeckLinkAPI_Name "libDeckLinkAPI.so"
+#define KDeckLinkPreviewAPI_Name "libDeckLinkPreviewAPI.so"
+
 typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
-typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewFunc)(void);
+typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
 
 static pthread_once_t					gDeckLinkOnceControl = PTHREAD_ONCE_INIT;
+static pthread_once_t					gPreviewOnceControl = PTHREAD_ONCE_INIT;
+
 static CreateIteratorFunc				gCreateIteratorFunc = NULL;
-static CreateOpenGLScreenPreviewFunc	gCreateOpenGLPreviewFunc = NULL;
+static CreateOpenGLScreenPreviewHelperFunc	gCreateOpenGLPreviewFunc = NULL;
 
 void	InitDeckLinkAPI (void)
 {
 	void *libraryHandle;
 	
-	libraryHandle = dlopen(kDeckLinkAPI_Name, RTLD_LAZY|RTLD_GLOBAL);
+	libraryHandle = dlopen(kDeckLinkAPI_Name, RTLD_NOW|RTLD_GLOBAL);
 	if (!libraryHandle)
+	{
+		fprintf(stderr, "%s\n", dlerror());
 		return;
+	}
 	gCreateIteratorFunc = (CreateIteratorFunc)dlsym(libraryHandle, "CreateDeckLinkIteratorInstance");
-	gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewFunc)dlsym(libraryHandle, "CreateOpenGLScreenPreview");
+	if (!gCreateIteratorFunc)
+		fprintf(stderr, "%s\n", dlerror());
+}
+
+void	InitDeckLinkPreviewAPI (void)
+{
+	void *libraryHandle;
+	
+	libraryHandle = dlopen(KDeckLinkPreviewAPI_Name, RTLD_NOW|RTLD_GLOBAL);
+	if (!libraryHandle)
+	{
+		fprintf(stderr, "%s\n", dlerror());
+		return;
+	}
+	gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewHelperFunc)dlsym(libraryHandle, "CreateOpenGLScreenPreviewHelper");
+	if (!gCreateOpenGLPreviewFunc)
+		fprintf(stderr, "%s\n", dlerror());
 }
 
 IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
@@ -57,9 +82,10 @@ IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
 	return gCreateIteratorFunc();
 }
 
-IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreview (void)
+IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreviewHelper (void)
 {
 	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	pthread_once(&gPreviewOnceControl, InitDeckLinkPreviewAPI);
 	
 	if (gCreateOpenGLPreviewFunc == NULL)
 		return NULL;

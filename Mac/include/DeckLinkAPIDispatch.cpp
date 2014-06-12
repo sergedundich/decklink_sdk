@@ -31,10 +31,14 @@
 
 #define kDeckLinkAPI_BundlePath "/Library/Application Support/Blackmagic Design/Blackmagic DeckLink/DeckLinkAPI.bundle"
 typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
+typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
+typedef IDeckLinkCocoaScreenPreviewCallback* (*CreateCocoaScreenPreviewFunc)(void*);
 
-static pthread_once_t		gDeckLinkOnceControl	= PTHREAD_ONCE_INIT;
-static CFBundleRef			gBundleRef				= NULL;
-static CreateIteratorFunc	gCreateIteratorFunc		= NULL;
+static pthread_once_t					gDeckLinkOnceControl		= PTHREAD_ONCE_INIT;
+static CFBundleRef						gBundleRef					= NULL;
+static CreateIteratorFunc				gCreateIteratorFunc			= NULL;
+static CreateOpenGLScreenPreviewHelperFunc	gCreateOpenGLPreviewFunc	= NULL;
+static CreateCocoaScreenPreviewFunc		gCreateCocoaPreviewFunc		= NULL;
 
 
 void	InitDeckLinkAPI (void)
@@ -48,17 +52,40 @@ void	InitDeckLinkAPI (void)
 		if (gBundleRef != NULL)
 		{
 			gCreateIteratorFunc = (CreateIteratorFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateDeckLinkIteratorInstance"));
+			gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewHelperFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateOpenGLScreenPreviewHelper"));
+			gCreateCocoaPreviewFunc = (CreateCocoaScreenPreviewFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateCocoaScreenPreview"));
 		}
+		CFRelease(bundleURL);
 	}
 }
 
 IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
 {
-    pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
 	
 	if (gCreateIteratorFunc == NULL)
 		return NULL;
 	
 	return gCreateIteratorFunc();
+}
+
+IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreviewHelper (void)
+{
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	
+	if (gCreateOpenGLPreviewFunc == NULL)
+		return NULL;
+	
+	return gCreateOpenGLPreviewFunc();
+}
+
+IDeckLinkCocoaScreenPreviewCallback*	CreateCocoaScreenPreview (void* parentView)
+{
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	
+	if (gCreateCocoaPreviewFunc == NULL)
+		return NULL;
+	
+	return gCreateCocoaPreviewFunc(parentView);
 }
 
