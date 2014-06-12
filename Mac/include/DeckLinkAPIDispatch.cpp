@@ -36,6 +36,7 @@
 #define kDeckLinkAPI_BundlePath "/Library/Application Support/Blackmagic Design/Blackmagic DeckLink/DeckLinkAPI.bundle"
 
 typedef IDeckLinkIterator* (*CreateIteratorFunc)(void);
+typedef IDeckLinkAPIInformation* (*CreateAPIInformationFunc)(void);
 typedef IDeckLinkGLScreenPreviewHelper* (*CreateOpenGLScreenPreviewHelperFunc)(void);
 typedef IDeckLinkCocoaScreenPreviewCallback* (*CreateCocoaScreenPreviewFunc)(void*);
 typedef IDeckLinkVideoConversion* (*CreateVideoConversionInstanceFunc)(void);
@@ -43,6 +44,7 @@ typedef IDeckLinkVideoConversion* (*CreateVideoConversionInstanceFunc)(void);
 static pthread_once_t						gDeckLinkOnceControl		= PTHREAD_ONCE_INIT;
 static CFBundleRef							gBundleRef					= NULL;
 static CreateIteratorFunc					gCreateIteratorFunc			= NULL;
+static CreateAPIInformationFunc				gCreateAPIInformationFunc	= NULL;
 static CreateOpenGLScreenPreviewHelperFunc	gCreateOpenGLPreviewFunc	= NULL;
 static CreateCocoaScreenPreviewFunc			gCreateCocoaPreviewFunc		= NULL;
 static CreateVideoConversionInstanceFunc	gCreateVideoConversionFunc	= NULL;
@@ -59,12 +61,22 @@ void	InitDeckLinkAPI (void)
 		if (gBundleRef != NULL)
 		{
 			gCreateIteratorFunc = (CreateIteratorFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateDeckLinkIteratorInstance_0001"));
+			gCreateAPIInformationFunc = (CreateAPIInformationFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateDeckLinkAPIInformationInstance_0001"));
 			gCreateOpenGLPreviewFunc = (CreateOpenGLScreenPreviewHelperFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateOpenGLScreenPreviewHelper_0001"));
 			gCreateCocoaPreviewFunc = (CreateCocoaScreenPreviewFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateCocoaScreenPreview_0001"));
 			gCreateVideoConversionFunc = (CreateVideoConversionInstanceFunc)CFBundleGetFunctionPointerForName(gBundleRef, CFSTR("CreateVideoConversionInstance_0001"));
 		}
 		CFRelease(bundleURL);
 	}
+}
+
+bool		IsDeckLinkAPIPresent (void)
+{
+	// If the DeckLink API bundle was successfully loaded, return this knowledge to the caller
+	if (gBundleRef != NULL)
+		return true;
+	
+	return false;
 }
 
 IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
@@ -75,6 +87,16 @@ IDeckLinkIterator*		CreateDeckLinkIteratorInstance (void)
 		return NULL;
 	
 	return gCreateIteratorFunc();
+}
+
+IDeckLinkAPIInformation*	CreateDeckLinkAPIInformationInstance (void)
+{
+	pthread_once(&gDeckLinkOnceControl, InitDeckLinkAPI);
+	
+	if (gCreateAPIInformationFunc == NULL)
+		return NULL;
+	
+	return gCreateAPIInformationFunc();
 }
 
 IDeckLinkGLScreenPreviewHelper*		CreateOpenGLScreenPreviewHelper (void)
